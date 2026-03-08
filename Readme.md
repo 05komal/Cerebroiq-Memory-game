@@ -6,7 +6,7 @@
 
 ## Live Demo
 
->[https://cerebroiq-memory-game.vercel.app/]
+>https://cerebroiq-memory-game.vercel.app/
 
 ---
 
