@@ -6,7 +6,7 @@
 
 ## Live Demo
 
-> [https://cerebroiq.vercel.app](https://cerebroiq.vercel.app)
+>[ [https://cerebroiq.vercel.app](https://cerebroiq.vercel.app)](https://cerebroiq-memory-game.vercel.app/login.html)
 
 ---
 
@@ -45,13 +45,13 @@ A flash memory game that tests how well you can recall sequences.
 
 ## Features
 
--  **Login / Register system** — per-user scores saved in `localStorage`
--  **Auth-gated pages** — hub and games redirect to login if not signed in
--  **Live score tracking** — score, streak, accuracy, and best scores per category
--  **Category-themed floating particles** — leaves for Geography, notes for Music, bugs for Nature, etc.
--  **10 dynamic themes** — each category has its own color palette and background
--  **Responsive design** — works on desktop and mobile
--  **No dependencies** — pure HTML/CSS/JS, no npm, no build step
+- 🔐 **Login / Register system** — per-user scores saved in `localStorage`
+- 🛡️ **Auth-gated pages** — hub and games redirect to login if not signed in
+- 📊 **Live score tracking** — score, streak, accuracy, and best scores per category
+- 🌊 **Category-themed floating particles** — leaves for Geography, notes for Music, bugs for Nature, etc.
+- 🎨 **10 dynamic themes** — each category has its own color palette and background
+- 📱 **Responsive design** — works on desktop and mobile
+- ⚡ **No dependencies** — pure HTML/CSS/JS, no npm, no build step
 
 ---
 
@@ -104,7 +104,7 @@ Double-click `login.html` in File Explorer *(most features work)*
 
 ---
 
-## 🔧 Tech Stack
+## Tech Stack
 
 | Technology | Usage |
 |-----------|-------|
@@ -158,4 +158,20 @@ Built as a personal project — feel free to fork, modify, and deploy your own v
 
 ## License
 
-This project is open source and available under the [MIT License](LICENSE).
+This project is open source and available under the [Apache License 2.0](LICENSE).
+
+```
+Copyright 2024 CerebroIQ
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+```
