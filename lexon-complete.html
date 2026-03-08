@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CerebroIQ — Word Guesser</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Playfair+Display:ital,wght@1,700&family=Space+Mono:wght@400;700&family=Cinzel:wght@700;900&family=Bebas+Neue&family=Nunito:wght@800;900&display=swap" rel="stylesheet">
+<style>
+:root{--accent:#00f5d4;--accent2:#06b6d4;--bg1:#050d0d;--surface:#0c1a1a;--border:#183030;--tc:#00f5d4;--tb:#009e8a;--tbg:rgba(0,245,212,.09);--muted:#1a4848;--glow:rgba(0,245,212,.2);--font-d:'Orbitron',sans-serif;--badge-bg:rgba(0,245,212,.1);--tab-act:rgba(0,245,212,.14);--text:#e4eeff}
+body[data-theme="GEOGRAPHY"]{--accent:#22c55e;--accent2:#4ade80;--bg1:#050e05;--surface:#091609;--border:#183518;--tc:#4ade80;--tb:#16a34a;--tbg:rgba(34,197,94,.1);--muted:#1e4a1e;--glow:rgba(34,197,94,.2);--font-d:'Space Mono',monospace;--badge-bg:rgba(34,197,94,.1);--tab-act:rgba(34,197,94,.15)}
+body[data-theme="HISTORY"]{--accent:#d97706;--accent2:#fbbf24;--bg1:#0e0800;--surface:#1c1100;--border:#3d2800;--tc:#fff8e7;--tb:#b45309;--tbg:rgba(180,83,9,.18);--muted:#6b4a1a;--glow:rgba(217,119,6,.25);--font-d:'Cinzel',serif;--badge-bg:rgba(180,83,9,.2);--tab-act:rgba(217,119,6,.22)}
+body[data-theme="SCIENCE"]{--accent:#818cf8;--accent2:#a5b4fc;--bg1:#050714;--surface:#0d1030;--border:#1c224e;--tc:#a5b4fc;--tb:#6366f1;--tbg:rgba(99,102,241,.12);--muted:#28286a;--glow:rgba(99,102,241,.25);--font-d:'Orbitron',sans-serif;--badge-bg:rgba(99,102,241,.15);--tab-act:rgba(99,102,241,.2)}
+body[data-theme="MUSIC"]{--accent:#ec4899;--accent2:#d8b4fe;--bg1:#0d0010;--surface:#190028;--border:#320040;--tc:#f9a8d4;--tb:#a855f7;--tbg:rgba(168,85,247,.12);--muted:#450058;--glow:rgba(236,72,153,.25);--font-d:'Playfair Display',serif;--badge-bg:rgba(236,72,153,.12);--tab-act:rgba(236,72,153,.18)}
+body[data-theme="SPORTS"]{--accent:#eab308;--accent2:#fde047;--bg1:#060d02;--surface:#0c1a04;--border:#1a2e08;--tc:#ffffff;--tb:#ca8a04;--tbg:rgba(234,179,8,.1);--muted:#384a10;--glow:rgba(234,179,8,.2);--font-d:'Bebas Neue',cursive;--badge-bg:rgba(234,179,8,.12);--tab-act:rgba(234,179,8,.18)}
+body[data-theme="TECH"]{--accent:#00f5d4;--accent2:#06b6d4;--bg1:#050d0d;--surface:#0c1a1a;--border:#183030;--tc:#00f5d4;--tb:#009e8a;--tbg:rgba(0,245,212,.08);--muted:#1a4848;--glow:rgba(0,245,212,.2);--font-d:'Orbitron',sans-serif;--badge-bg:rgba(0,245,212,.1);--tab-act:rgba(0,245,212,.15)}
+body[data-theme="NATURE"]{--accent:#0ea5e9;--accent2:#7dd3fc;--bg1:#030d14;--surface:#091a2a;--border:#0d2a40;--tc:#7dd3fc;--tb:#0284c7;--tbg:rgba(14,165,233,.1);--muted:#183858;--glow:rgba(14,165,233,.2);--font-d:'Nunito',sans-serif;--badge-bg:rgba(14,165,233,.12);--tab-act:rgba(14,165,233,.18)}
+body[data-theme="GAMES"]{--accent:#ef4444;--accent2:#fca5a5;--bg1:#0a0505;--surface:#1a0606;--border:#2c1010;--tc:#fca5a5;--tb:#dc2626;--tbg:rgba(239,68,68,.1);--muted:#481818;--glow:rgba(239,68,68,.2);--font-d:'Orbitron',sans-serif;--badge-bg:rgba(239,68,68,.12);--tab-act:rgba(239,68,68,.18)}
+body[data-theme="GENERAL"]{--accent:#94a3b8;--accent2:#cbd5e1;--bg1:#0e0e14;--surface:#181825;--border:#252535;--tc:#cbd5e1;--tb:#475569;--tbg:rgba(100,116,139,.08);--muted:#2a2a3f;--glow:rgba(100,116,139,.15);--font-d:'Space Mono',monospace;--badge-bg:rgba(100,116,139,.1);--tab-act:rgba(100,116,139,.15)}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg1);color:#e4eeff;font-family:'Space Mono',monospace;min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow-x:hidden;transition:background .7s}
+
+.theme-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.theme-bg::before,.theme-bg::after{content:'';position:absolute;inset:0;transition:opacity .7s}
+body[data-theme="GEOGRAPHY"] .theme-bg::before{background:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(34,197,94,.1) 0%,transparent 60%),linear-gradient(170deg,#050e05,#0a1f0a,#0f2b0c)}
+body[data-theme="HISTORY"] .theme-bg::before{background:radial-gradient(ellipse 80% 60% at 30% 20%,rgba(180,83,9,.18) 0%,transparent 55%),linear-gradient(145deg,#0e0800,#1a1000,#150d00)}
+body[data-theme="SCIENCE"] .theme-bg::before{background:radial-gradient(ellipse 70% 55% at 50% 50%,rgba(99,102,241,.08) 0%,transparent 60%),linear-gradient(145deg,#050714,#080d20)}
+body[data-theme="SCIENCE"] .theme-bg::after{background:radial-gradient(ellipse 60% 40% at 50% 50%,rgba(99,102,241,.04) 0%,transparent 70%);animation:sciPulse 4s ease-in-out infinite alternate}
+@keyframes sciPulse{from{opacity:.5}to{opacity:1}}
+body[data-theme="MUSIC"] .theme-bg::before{background:radial-gradient(ellipse 100% 40% at 50% 105%,rgba(236,72,153,.18) 0%,transparent 60%),linear-gradient(160deg,#0d0010,#170022)}
+body[data-theme="MUSIC"] .theme-bg::after{background:repeating-linear-gradient(90deg,transparent 0px,transparent 62px,rgba(168,85,247,.015) 62px,rgba(168,85,247,.015) 63px)}
+body[data-theme="SPORTS"] .theme-bg::before{background:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(234,179,8,.14) 0%,transparent 50%),linear-gradient(160deg,#060d02,#0a1604)}
+body[data-theme="SPORTS"] .theme-bg::after{background:repeating-linear-gradient(0deg,rgba(34,197,94,.025) 0px,rgba(34,197,94,.025) 1px,transparent 1px,transparent 28px),repeating-linear-gradient(90deg,rgba(34,197,94,.02) 0px,rgba(34,197,94,.02) 1px,transparent 1px,transparent 52px)}
+body[data-theme="TECH"] .theme-bg::before{background:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(0,245,212,.1) 0%,transparent 60%),linear-gradient(145deg,#050d0d,#071412)}
+body[data-theme="TECH"] .theme-bg::after{background-image:linear-gradient(rgba(0,245,212,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,212,.025) 1px,transparent 1px);background-size:32px 32px}
+body[data-theme="NATURE"] .theme-bg::before{background:radial-gradient(ellipse 100% 60% at 50% 100%,rgba(14,165,233,.14) 0%,transparent 60%),linear-gradient(160deg,#030d14,#051825)}
+body[data-theme="GENERAL"] .theme-bg::before{background:radial-gradient(ellipse 65% 55% at 50% 50%,rgba(100,116,139,.05) 0%,transparent 70%),linear-gradient(145deg,#0e0e14,#161622)}
+body[data-theme="GAMES"] .theme-bg::before{background:radial-gradient(ellipse 70% 50% at 50% 50%,rgba(239,68,68,.05) 0%,transparent 60%),linear-gradient(145deg,#0a0505,#160808)}
+body[data-theme="GAMES"] .theme-bg::after{background:repeating-linear-gradient(0deg,transparent 0px,transparent 3px,rgba(239,68,68,.018) 3px,rgba(239,68,68,.018) 4px)}
+
+.scanlines{position:fixed;inset:0;z-index:2;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.016) 2px,rgba(0,0,0,.016) 4px)}
+
+/* Floating particles layer */
+.particles{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.p-item{position:absolute;pointer-events:none;font-size:1.8rem;animation:pFloat linear infinite;opacity:0;user-select:none}
+@keyframes pFloat{0%{opacity:0;transform:translateY(105vh) rotate(0deg) scale(.7)}12%{opacity:var(--op,.45)}82%{opacity:var(--op,.38)}100%{opacity:0;transform:translateY(-80px) rotate(var(--rot,20deg)) scale(1.1)}}
+
+.screen{display:none;position:relative;z-index:3;width:100%;flex-direction:column;align-items:center}
+.screen.active{display:flex}
+
+#gameScreen{min-height:100vh;max-width:1280px;padding:0 28px 40px;margin:0 auto;width:100%}
+
+/* Header */
+.g-header{display:flex;align-items:center;justify-content:space-between;padding:16px 0 12px;gap:10px;flex-wrap:wrap;width:100%}
+.g-logo{font-family:'Orbitron',sans-serif;font-weight:900;font-size:1.5rem;letter-spacing:.2em;color:var(--accent);text-shadow:0 0 16px var(--glow);transition:color .7s}
+.g-logo em{color:var(--accent2);font-style:normal}
+.back-btn{display:flex;align-items:center;gap:7px;font-size:.63rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:8px 14px;border:1px solid rgba(255,255,255,.07);border-radius:8px;transition:all .25s;cursor:pointer;background:transparent;font-family:'Space Mono',monospace}
+.back-btn:hover{color:var(--accent);border-color:var(--accent)}
+.hud{display:flex;gap:16px;align-items:center}
+.hstat{display:flex;flex-direction:column;align-items:center;gap:1px}
+.hval{font-family:'Orbitron',sans-serif;font-size:1.1rem;font-weight:700;color:#e4eeff}
+.hval.bump{animation:bump .35s ease}
+.hlbl{font-size:.5rem;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+.user-btn{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:7px 12px;cursor:pointer;transition:all .25s;font-size:.68rem;color:#e4eeff;font-family:'Space Mono',monospace}
+.user-btn:hover{border-color:var(--accent);background:var(--badge-bg)}
+.uav{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-size:.6rem;font-weight:700;color:#000}
+
+/* Category tabs */
+.cat-nav{overflow-x:auto;-webkit-overflow-scrolling:touch;width:100%;margin-bottom:4px}
+.cat-nav::-webkit-scrollbar{height:0}
+.cat-tabs{display:flex;gap:6px;min-width:max-content;padding:4px 0}
+.ctab{padding:6px 15px;border-radius:20px;border:1.5px solid rgba(255,255,255,.07);background:transparent;color:rgba(255,255,255,.28);font-family:'Space Mono',monospace;font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .25s;white-space:nowrap}
+.ctab:hover{color:rgba(255,255,255,.55);border-color:rgba(255,255,255,.2)}
+.ctab.active{background:var(--tab-act);border-color:var(--accent);color:var(--accent);box-shadow:0 0 10px var(--glow)}
+
+/* Layout */
+.game-layout{display:grid;grid-template-columns:1fr 320px;gap:22px;align-items:start;width:100%}
+@media(max-width:900px){.game-layout{grid-template-columns:1fr}}
+.game-left{display:flex;flex-direction:column;gap:14px}
+
+.meta-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.theme-badge{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;padding:6px 15px;border-radius:20px;border:1px solid var(--accent);color:var(--accent);background:var(--badge-bg);font-family:var(--font-d);box-shadow:0 0 10px var(--glow);transition:all .7s}
+.att-row{display:flex;align-items:center;gap:8px;font-size:.6rem;color:var(--muted)}
+.att-bubbles{display:flex;gap:4px}
+.att-b{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);transition:all .3s}
+.att-b.wrong{background:#ff3860;border-color:#ff3860;box-shadow:0 0 5px #ff3860}
+
+/* Tiles */
+.word-display{display:flex;gap:9px;flex-wrap:wrap;justify-content:flex-start;min-height:74px;align-items:center;padding:6px 0}
+.tile{width:60px;height:68px;background:var(--tbg);border:2px solid rgba(255,255,255,.06);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:1.5rem;font-weight:700;color:transparent;position:relative;transition:all .4s}
+.tile::after{content:'—';position:absolute;color:rgba(255,255,255,.1);font-size:.72rem;font-family:'Space Mono',monospace}
+.tile.revealed{color:var(--tc);border-color:var(--tb);box-shadow:0 0 12px var(--glow);animation:tFlip .4s ease both}
+.tile.revealed::after,.tile.won::after,.tile.auto-rv::after{display:none}
+.tile.won{color:#fff;border-color:var(--accent2);box-shadow:0 0 18px var(--glow);animation:tWin .5s ease both}
+.tile.auto-rv{color:var(--accent);border-color:var(--accent);background:var(--badge-bg);box-shadow:0 0 14px var(--glow);animation:tFlip .4s ease both}
+
+/* Hint */
+.hint-panel{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:15px 20px;display:flex;gap:12px;align-items:flex-start;transition:all .7s}
+.hint-lbl{font-size:.54rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;font-family:'Space Mono',monospace}
+.hint-body{font-size:.9rem;color:#d0e4ff;line-height:1.6;font-family:'Space Mono',monospace}
+.len-tag{display:inline-block;background:var(--badge-bg);border:1px solid var(--accent);color:var(--accent);font-size:.64rem;padding:2px 7px;border-radius:4px;margin-left:8px;vertical-align:middle;font-family:'Space Mono',monospace}
+
+/* Reveal banner */
+.rv-banner{display:none;background:rgba(255,56,96,.07);border:1.5px solid #ff3860;border-radius:12px;padding:13px 20px;text-align:center}
+.rv-banner.show{display:block;animation:fadeUp .4s ease}
+.rv-lbl{font-size:.57rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,56,96,.7);margin-bottom:5px}
+.rv-word{font-family:var(--font-d);font-size:1.4rem;font-weight:700;color:var(--accent);letter-spacing:.18em}
+
+/* Progress */
+.prog-row{display:flex;align-items:center;gap:10px}
+.pbar{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.pfill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;transition:width .5s ease;box-shadow:0 0 5px var(--glow)}
+.plbl{font-size:.58rem;color:var(--muted);letter-spacing:.1em;white-space:nowrap}
+
+/* Input */
+.inp-row{display:flex;gap:10px}
+.ginp{flex:1;background:var(--surface);border:2px solid var(--border);border-radius:12px;padding:15px 18px;font-family:'Orbitron',sans-serif;font-size:.95rem;font-weight:700;color:#e4eeff;letter-spacing:.14em;outline:none;transition:border-color .3s,box-shadow .3s;text-transform:uppercase}
+.ginp:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--glow)}
+.ginp::placeholder{color:rgba(255,255,255,.13);font-size:.68rem;font-family:'Space Mono',monospace;font-weight:400;text-transform:none;letter-spacing:.04em}
+.ginp.shake{animation:shake .45s ease}
+.ginp.glow-ok{animation:inpGlow .5s ease}
+.bsub{background:var(--accent);color:#000;border:none;border-radius:12px;padding:15px 24px;font-family:'Orbitron',sans-serif;font-size:.78rem;font-weight:700;letter-spacing:.1em;cursor:pointer;box-shadow:0 0 16px var(--glow);transition:all .2s;white-space:nowrap}
+.bsub:hover{filter:brightness(1.12);transform:translateY(-1px)}
+.bsub:disabled{opacity:.3;cursor:not-allowed;transform:none}
+
+/* Action buttons */
+.act-row{display:flex;gap:8px;flex-wrap:wrap}
+.bact{flex:1;min-width:80px;background:transparent;border:1.5px solid var(--border);border-radius:10px;padding:10px 10px;color:rgba(255,255,255,.3);font-family:'Space Mono',monospace;font-size:.68rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:5px}
+.bact:hover:not(:disabled){border-color:var(--accent);color:var(--accent);background:var(--badge-bg)}
+.bact:disabled{opacity:.2;cursor:not-allowed}
+.bact.used{border-color:var(--accent);color:var(--accent);background:var(--badge-bg)}
+.bskip{border-color:rgba(255,107,53,.28);color:rgba(255,107,53,.4)}
+.bskip:hover:not(:disabled){border-color:#ff6b35;color:#ff6b35;background:rgba(255,107,53,.07)}
+
+.divider{width:100%;height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent)}
+
+/* Keyboard */
+.keyboard{display:flex;flex-direction:column;gap:6px;align-items:center}
+.krow{display:flex;gap:5px}
+.kkey{background:var(--surface);border:1.5px solid var(--border);border-radius:8px;min-width:33px;height:42px;padding:0 4px;font-family:var(--font-d);font-size:.65rem;font-weight:700;color:rgba(255,255,255,.48);cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center}
+.kkey:hover{border-color:var(--accent);color:var(--accent)}
+.kkey.elim{background:rgba(255,56,96,.06);border-color:rgba(255,56,96,.25);color:rgba(255,56,96,.25);cursor:default}
+.kkey.right{border-color:var(--accent);color:var(--accent);background:var(--badge-bg)}
+
+/* Right column */
+.game-right{display:flex;flex-direction:column;gap:14px}
+.rcard{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px;transition:all .7s}
+.rc-title{font-family:'Orbitron',sans-serif;font-size:.66rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:13px;display:flex;align-items:center;gap:8px}
+.rc-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+.score-big{font-family:'Orbitron',sans-serif;font-size:2.8rem;font-weight:900;color:#e4eeff;line-height:1;margin-bottom:4px}
+.score-sub{font-size:.54rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
+.score-stats{display:flex;margin-top:12px;border-top:1px solid var(--border);padding-top:12px}
+.sst{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px}
+.sst:not(:last-child){border-right:1px solid var(--border)}
+.sst-v{font-family:'Orbitron',sans-serif;font-size:1rem;font-weight:700;color:#e4eeff}
+.sst-l{font-size:.49rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+
+/* Points earned badge */
+.pts-flash{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Orbitron',sans-serif;font-size:2rem;font-weight:900;color:var(--accent);text-shadow:0 0 20px var(--glow);pointer-events:none;z-index:200;animation:ptsAnim .9s ease both}
+@keyframes ptsAnim{0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}30%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}70%{opacity:1;transform:translate(-50%,-55%) scale(1)}100%{opacity:0;transform:translate(-50%,-70%) scale(.9)}}
+
+/* History */
+.hist-card{max-height:280px;overflow-y:auto}
+.hist-card::-webkit-scrollbar{width:3px}
+.hist-card::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.hi{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.035);font-size:.67rem}
+.hw{color:#e4eeff;font-family:'Orbitron',sans-serif;font-size:.62rem;letter-spacing:.08em}
+.hp{font-family:'Orbitron',sans-serif;font-size:.66rem;font-weight:700}
+.hp.g{color:var(--accent)}.hp.b{color:#ff6b6b}
+.h-empty{font-size:.62rem;color:var(--muted);text-align:center;padding:16px 0;letter-spacing:.1em}
+
+/* Profile overlay */
+.overlay{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .4s;backdrop-filter:blur(8px)}
+.overlay.show{opacity:1;pointer-events:all}
+.ocard{background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:30px 36px;max-width:460px;width:90%}
+.och{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.oct{font-family:'Orbitron',sans-serif;font-size:.9rem;font-weight:700;color:var(--accent);letter-spacing:.12em}
+.ocx{background:transparent;border:none;color:rgba(255,255,255,.28);font-size:1.2rem;cursor:pointer;transition:color .2s;padding:4px}
+.ocx:hover{color:#e4eeff}
+.prow{display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.pav-lg{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-size:1.1rem;font-weight:700;color:#000}
+.pname{font-family:'Orbitron',sans-serif;font-size:.95rem;font-weight:700;color:#e4eeff;margin-bottom:3px}
+.pjoin{font-size:.54rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:16px}
+.sg{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:11px;text-align:center}
+.sg-v{font-family:'Orbitron',sans-serif;font-size:1.1rem;font-weight:700;color:var(--accent);margin-bottom:3px}
+.sg-l{font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.cat-scores{display:flex;flex-direction:column;gap:6px;max-height:200px;overflow-y:auto}
+.cs-row{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:rgba(255,255,255,.025);border-radius:8px;font-size:.67rem}
+.cs-n{color:rgba(255,255,255,.42);letter-spacing:.08em;text-transform:uppercase}
+.cs-v{font-family:'Orbitron',sans-serif;font-size:.76rem;font-weight:700;color:var(--accent)}
+.logout-btn{width:100%;margin-top:14px;background:transparent;border:1px solid rgba(255,56,96,.28);border-radius:10px;padding:10px;color:rgba(255,56,96,.55);font-family:'Orbitron',sans-serif;font-size:.66rem;font-weight:700;letter-spacing:.1em;cursor:pointer;transition:all .2s}
+.logout-btn:hover{border-color:#ff3860;color:#ff3860;background:rgba(255,56,96,.05)}
+
+/* Game end overlay */
+.gend-icon{font-size:3.2rem;margin-bottom:10px;animation:floatUp 2s ease-in-out infinite;display:block;text-align:center}
+.gend-title{font-family:'Orbitron',sans-serif;font-size:1.55rem;font-weight:900;text-align:center;margin-bottom:7px}
+.gend-title.win{color:#ffe600;text-shadow:0 0 20px rgba(255,230,0,.4)}
+.gend-sub{font-size:.72rem;color:rgba(255,255,255,.33);text-align:center;margin-bottom:16px}
+.gend-score{font-family:'Orbitron',sans-serif;font-size:1.9rem;font-weight:700;text-align:center;margin-bottom:16px}
+.gend-score span{color:var(--accent2)}
+.btn-pa{width:100%;background:var(--accent);color:#000;border:none;border-radius:12px;padding:14px;font-family:'Orbitron',sans-serif;font-size:.86rem;font-weight:700;letter-spacing:.1em;cursor:pointer;box-shadow:0 0 18px var(--glow);transition:all .2s;margin-bottom:9px}
+.btn-pa:hover{filter:brightness(1.12)}
+.btn-sec{width:100%;background:transparent;border:1px solid var(--border);border-radius:12px;padding:12px;font-family:'Orbitron',sans-serif;font-size:.74rem;font-weight:700;letter-spacing:.1em;color:rgba(255,255,255,.28);cursor:pointer;transition:all .2s}
+.btn-sec:hover{border-color:rgba(255,255,255,.28);color:rgba(255,255,255,.56)}
+
+/* Toast */
+.toast{position:fixed;top:18px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 22px;font-family:'Orbitron',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.08em;z-index:200;pointer-events:none;white-space:nowrap;transition:transform .4s cubic-bezier(.34,1.56,.64,1)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.ok{border-color:var(--accent);color:var(--accent)}
+.toast.bad{border-color:#ff3860;color:#ff3860;background:#0d0306}
+.toast.info{border-color:rgba(255,230,0,.45);color:#ffe600}
+
+@keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.35)}100%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}15%{transform:translateX(-7px)}30%{transform:translateX(7px)}45%{transform:translateX(-5px)}60%{transform:translateX(5px)}75%{transform:translateX(-3px)}90%{transform:translateX(3px)}}
+@keyframes tFlip{0%{transform:rotateY(90deg) scale(.8);opacity:0}100%{transform:rotateY(0) scale(1);opacity:1}}
+@keyframes tWin{0%{transform:scale(1)}30%{transform:scale(1.14) rotate(-2deg)}60%{transform:scale(1.09) rotate(2deg)}100%{transform:scale(1)}}
+@keyframes inpGlow{0%,100%{box-shadow:0 0 0 3px var(--glow)}50%{box-shadow:0 0 0 6px var(--glow),0 0 22px var(--glow)}}
+@keyframes floatUp{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+@media(max-width:600px){.tile{width:46px;height:54px;font-size:1.1rem}.kkey{min-width:27px;height:38px;font-size:.58rem}#gameScreen{padding:0 10px 40px}}
+</style>
+</head>
+<body data-theme="TECH">
+<div class="theme-bg"></div>
+<div class="scanlines"></div>
+<div class="particles" id="particles"></div>
+<div class="toast" id="toast"></div>
+
+<div class="screen active" id="gameScreen">
+  <div class="g-header">
+    <div style="display:flex;align-items:center;gap:11px">
+      <button class="back-btn" id="backBtn">← CerebroIQ</button>
+      <div class="g-logo">Word<em>Quest</em></div>
+    </div>
+    <div class="hud">
+      <div class="hstat"><span class="hval" id="hScore">0</span><span class="hlbl">Score</span></div>
+      <div class="hstat"><span class="hval" id="hStreak">0</span><span class="hlbl">Streak</span></div>
+      <div class="hstat"><span class="hval" id="hCorrect">0</span><span class="hlbl">Correct</span></div>
+      <button class="user-btn" id="profileBtn">
+        <div class="uav" id="hAv">?</div>
+        <span id="hName">Player</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="cat-nav">
+    <div class="cat-tabs" id="catTabs">
+      <button class="ctab active" data-cat="ALL">All</button>
+      <button class="ctab" data-cat="GEOGRAPHY">Geography</button>
+      <button class="ctab" data-cat="HISTORY">History</button>
+      <button class="ctab" data-cat="SCIENCE">Science</button>
+      <button class="ctab" data-cat="MUSIC">Music</button>
+      <button class="ctab" data-cat="SPORTS">Sports</button>
+      <button class="ctab" data-cat="TECH">Tech</button>
+      <button class="ctab" data-cat="NATURE">Nature</button>
+      <button class="ctab" data-cat="GAMES">Games</button>
+      <button class="ctab" data-cat="GENERAL">General</button>
+    </div>
+  </div>
+
+  <div class="game-layout">
+    <div class="game-left">
+      <div class="meta-row">
+        <div class="theme-badge" id="thBadge">⚙ TECH</div>
+        <div class="att-row">
+          <span id="attLbl">Attempt 1/5</span>
+          <div class="att-bubbles" id="attBubs"></div>
+        </div>
+      </div>
+
+      <div class="word-display" id="wordDisp"></div>
+
+      <div class="rv-banner" id="rvBanner">
+        <div class="rv-lbl">All attempts used — Answer revealed!</div>
+        <div class="rv-word" id="rvWord"></div>
+      </div>
+
+      <div class="hint-panel">
+        <div style="font-size:1.1rem;flex-shrink:0;margin-top:2px">💡</div>
+        <div style="flex:1">
+          <div class="hint-lbl">Hint</div>
+          <div class="hint-body" id="hintBody">—</div>
+        </div>
+      </div>
+
+      <div class="prog-row">
+        <div class="pbar"><div class="pfill" id="pFill" style="width:0%"></div></div>
+        <div class="plbl" id="pLbl">0 / 0</div>
+      </div>
+
+      <div class="inp-row">
+        <input class="ginp" id="ginp" type="text" placeholder="Type your guess…" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="30">
+        <button class="bsub" id="bSub">GUESS ↵</button>
+      </div>
+
+      <div class="act-row">
+        <button class="bact" id="bReveal">🔡 Reveal Letter <small style="opacity:.4;font-size:.54rem">−1pt</small></button>
+        <button class="bact" id="bLen">📏 Word Length</button>
+        <button class="bact bskip" id="bSkip">⏭ Skip</button>
+      </div>
+
+      <div class="divider"></div>
+      <div class="keyboard" id="keyboard"></div>
+    </div>
+
+    <div class="game-right">
+      <div class="rcard">
+        <div class="rc-title">Your Score</div>
+        <div class="score-big" id="scoreBig">0</div>
+        <div class="score-sub">Total Points  (10 per correct word)</div>
+        <div class="score-stats">
+          <div class="sst"><span class="sst-v" id="scC">0</span><span class="sst-l">Correct</span></div>
+          <div class="sst"><span class="sst-v" id="scS">0</span><span class="sst-l">Best Streak</span></div>
+          <div class="sst"><span class="sst-v" id="scA">—</span><span class="sst-l">Accuracy</span></div>
+        </div>
+      </div>
+
+      <div class="rcard hist-card">
+        <div class="rc-title">Round History</div>
+        <div id="histList"><div class="h-empty">No words yet</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Profile overlay -->
+<div class="overlay" id="profOv">
+  <div class="ocard">
+    <div class="och"><div class="oct">Profile</div><button class="ocx" id="closeProfBtn">✕</button></div>
+    <div class="prow">
+      <div class="pav-lg" id="pAvLg">?</div>
+      <div><div class="pname" id="pNmLg">Player</div><div class="pjoin" id="pJoLg">Member</div></div>
+    </div>
+    <div class="stat-grid">
+      <div class="sg"><div class="sg-v" id="pgSc">0</div><div class="sg-l">Best Score</div></div>
+      <div class="sg"><div class="sg-v" id="pgGm">0</div><div class="sg-l">Games</div></div>
+      <div class="sg"><div class="sg-v" id="pgSt">0</div><div class="sg-l">Best Streak</div></div>
+    </div>
+    <div class="rc-title" style="margin-bottom:9px">Category Scores</div>
+    <div class="cat-scores" id="catScList"></div>
+    <button class="logout-btn" id="logoutBtn">LOG OUT</button>
+  </div>
+</div>
+
+<!-- Game end overlay -->
+<div class="overlay" id="gEndOv">
+  <div class="ocard" style="text-align:center">
+    <span class="gend-icon" id="gEI">🏆</span>
+    <div class="gend-title win" id="gET">ALL DONE!</div>
+    <div class="gend-sub" id="gES">You finished all words</div>
+    <div class="gend-score" id="gESc"><span>0</span> pts</div>
+    <button class="btn-pa" id="btnPA">PLAY AGAIN</button>
+    <button class="btn-sec" id="btnGH">← CerebroIQ Hub</button>
+  </div>
+</div>
+
+<script>
+/* Auth guard */
+const CU=sessionStorage.getItem('cerebro_session');
+if(!CU){window.location.href='login.html';}
+
+/* Category particles config */
+const CAT_PARTICLES={
+  ALL:     {items:['⬡','○','◇','✦','·','◈','⊕'],color:'rgba(0,245,212,.8)'},
+  GEOGRAPHY:{items:['🍃','🌿','🍂','🌱','🍀','🌾','🍁'],color:''},
+  HISTORY: {items:['⚔️','🏺','📜','🗡️','🏛️','⚜️','🔱'],color:''},
+  SCIENCE: {items:['⚛','🔬','⚗','🧬','∞','Δ','Σ','λ','π'],color:'rgba(165,180,252,.9)'},
+  MUSIC:   {items:['♩','♪','♫','♬','𝄞','♭','♮','♯'],color:'rgba(244,114,182,.9)'},
+  SPORTS:  {items:['⚽','🏀','🎾','🏈','🎱','🏸','🏓','⛳'],color:''},
+  TECH:    {items:['⬡','○','◇','⬟','◈','⊕','⊗','·'],color:'rgba(0,245,212,.85)'},
+  NATURE:  {items:['🌸','🌼','🐞','🦋','🌺','🌻','🍄','🌷'],color:''},
+  GAMES:   {items:['♟','🎲','🃏','🎯','♠','♥','♦','♣'],color:''},
+  GENERAL: {items:['⭐','✨','💫','🌟','✦','◈','○'],color:'rgba(203,213,225,.85)'},
+};
+
+let particleTimer=null;
+function startParticles(cat){
+  clearInterval(particleTimer);
+  document.getElementById('particles').innerHTML='';
+  const cfg=CAT_PARTICLES[cat]||CAT_PARTICLES.ALL;
+  particleTimer=setInterval(()=>{
+    const p=document.createElement('div');
+    p.className='p-item';
+    p.textContent=cfg.items[Math.floor(Math.random()*cfg.items.length)];
+    p.style.left=Math.random()*98+'vw';
+    p.style.animationDuration=(9+Math.random()*14)+'s';
+    p.style.animationDelay=(Math.random()*2)+'s';
+    p.style.setProperty('--rot',(Math.random()*60-30)+'deg');
+    p.style.setProperty('--op','0.72');
+    if(cfg.color) p.style.color=cfg.color;
+    p.style.fontSize=(1.4+Math.random()*1.2)+'rem';
+    document.getElementById('particles').appendChild(p);
+    setTimeout(()=>p.remove(),22000);
+  },650);
+}
+
+/* Word list */
+const WORDS=[
+  {w:"russia",h:"The largest country in the world by total land area",c:"GEOGRAPHY"},
+  {w:"island",h:"A landmass completely surrounded by water on every side",c:"GEOGRAPHY"},
+  {w:"nile",h:"The longest river in the world, flowing through northeastern Africa",c:"GEOGRAPHY"},
+  {w:"rajasthan",h:"The largest state in India, famous for its deserts and ancient forts",c:"GEOGRAPHY"},
+  {w:"amazon",h:"The world's largest tropical rainforest spanning most of South America",c:"GEOGRAPHY"},
+  {w:"everest",h:"The tallest mountain peak on Earth measured from sea level",c:"GEOGRAPHY"},
+  {w:"sahara",h:"The world's largest hot desert covering much of northern Africa",c:"GEOGRAPHY"},
+  {w:"pacific",h:"The largest and deepest ocean on Earth",c:"GEOGRAPHY"},
+  {w:"himalaya",h:"The mountain range in Asia containing the world's highest peaks",c:"GEOGRAPHY"},
+  {w:"brazil",h:"The largest country in South America and home to the Amazon rainforest",c:"GEOGRAPHY"},
+  {w:"iceland",h:"A Nordic island nation known for volcanoes, geysers, and the Northern Lights",c:"GEOGRAPHY"},
+  {w:"kenya",h:"An East African nation famous for its vast savannas and wildlife reserves",c:"GEOGRAPHY"},
+  {w:"canada",h:"The second-largest country in the world by total area",c:"GEOGRAPHY"},
+  {w:"norway",h:"A Scandinavian country famous for its fjords and long coastline",c:"GEOGRAPHY"},
+  {w:"egypt",h:"A North African country home to the Nile, the Sphinx, and ancient pyramids",c:"GEOGRAPHY"},
+  {w:"nepal",h:"A landlocked South Asian country bordering the Himalayas",c:"GEOGRAPHY"},
+  {w:"chile",h:"A long narrow South American country stretching along the Pacific coast",c:"GEOGRAPHY"},
+  {w:"fjord",h:"A long narrow deep inlet of sea between high cliffs formed by glaciers",c:"GEOGRAPHY"},
+  {w:"delta",h:"A triangular landform at the mouth of a river where it meets a larger body of water",c:"GEOGRAPHY"},
+  {w:"jordan",h:"A Middle Eastern country home to the ancient rose-red carved city of Petra",c:"GEOGRAPHY"},
+
+  {w:"pyramid",h:"An ancient Egyptian monument with a square base and four triangular sides, built as a royal tomb",c:"HISTORY"},
+  {w:"colosseum",h:"The massive ancient Roman amphitheater completed in 80 AD, still standing in Rome",c:"HISTORY"},
+  {w:"napoleon",h:"A French military general and emperor who conquered most of Europe in the early 19th century",c:"HISTORY"},
+  {w:"gladiator",h:"An ancient Roman warrior trained to fight other combatants in public arenas",c:"HISTORY"},
+  {w:"viking",h:"A seafaring Norse warrior from Scandinavia known for raids and exploration in the Middle Ages",c:"HISTORY"},
+  {w:"pharaoh",h:"The title given to the rulers of ancient Egypt, considered both kings and gods",c:"HISTORY"},
+  {w:"samurai",h:"A skilled Japanese warrior belonging to the military nobility of feudal Japan",c:"HISTORY"},
+  {w:"crusade",h:"A series of religious military expeditions launched by European Christians in the Middle Ages",c:"HISTORY"},
+  {w:"aztec",h:"A powerful Mesoamerican civilisation that built a vast empire in central Mexico",c:"HISTORY"},
+  {w:"mongol",h:"A nomadic Central Asian people whose empire became the largest contiguous land empire in history",c:"HISTORY"},
+  {w:"empire",h:"A group of nations under a single supreme authority, historically often an emperor",c:"HISTORY"},
+  {w:"castle",h:"A large fortified medieval building used as a residence and military stronghold",c:"HISTORY"},
+  {w:"sphinx",h:"Ancient limestone statue near Giza depicting a creature with a human head and lion body",c:"HISTORY"},
+  {w:"babylon",h:"One of the most celebrated cities of the ancient world, in present-day Iraq",c:"HISTORY"},
+  {w:"renaissance",h:"The European cultural movement of the 14th to 17th centuries that revived classical learning",c:"HISTORY"},
+  {w:"ottoman",h:"The vast Islamic empire that ruled southeast Europe, the Middle East, and North Africa for centuries",c:"HISTORY"},
+  {w:"roman",h:"Relating to the ancient civilisation centred in Rome that dominated Europe for centuries",c:"HISTORY"},
+  {w:"feudal",h:"Relating to the medieval system in which lords owned land and serfs worked it for protection",c:"HISTORY"},
+  {w:"trojan",h:"Relating to the legendary ancient war fought for a famous walled city in modern-day Turkey",c:"HISTORY"},
+  {w:"medieval",h:"Relating to the Middle Ages, roughly the 5th to the 15th century",c:"HISTORY"},
+
+  {w:"oxygen",h:"The element essential for breathing, with atomic number 8",c:"SCIENCE"},
+  {w:"galaxy",h:"A vast gravitationally bound system containing billions of stars",c:"SCIENCE"},
+  {w:"diamond",h:"The hardest naturally occurring substance on Earth, formed under immense underground pressure",c:"SCIENCE"},
+  {w:"gravity",h:"The fundamental force that attracts any two objects with mass toward each other",c:"SCIENCE"},
+  {w:"neutron",h:"A subatomic particle found in atomic nuclei that carries no electric charge",c:"SCIENCE"},
+  {w:"fossil",h:"Preserved remains or traces of an ancient organism embedded in rock over millions of years",c:"SCIENCE"},
+  {w:"plasma",h:"The fourth state of matter, consisting of a hot ionised gas of ions and free electrons",c:"SCIENCE"},
+  {w:"nucleus",h:"The dense central core of an atom, containing protons and neutrons",c:"SCIENCE"},
+  {w:"photon",h:"A particle of light — the quantum of electromagnetic radiation with no mass",c:"SCIENCE"},
+  {w:"quantum",h:"The minimum amount of energy involved in a physical interaction, central to modern physics",c:"SCIENCE"},
+  {w:"proton",h:"A positively charged subatomic particle found inside the nucleus of every atom",c:"SCIENCE"},
+  {w:"molecule",h:"The smallest unit of a chemical compound that retains all properties of that compound",c:"SCIENCE"},
+  {w:"entropy",h:"A thermodynamic concept measuring disorder or randomness in a system",c:"SCIENCE"},
+  {w:"catalyst",h:"A substance that increases the rate of a chemical reaction without being consumed",c:"SCIENCE"},
+  {w:"osmosis",h:"Movement of solvent molecules through a semipermeable membrane toward higher solute concentration",c:"SCIENCE"},
+  {w:"chromosome",h:"A thread-like structure of DNA and protein in cell nuclei that carries genetic information",c:"SCIENCE"},
+  {w:"electron",h:"A negatively charged subatomic particle that orbits the nucleus of an atom",c:"SCIENCE"},
+  {w:"isotope",h:"Variants of a chemical element with the same protons but different numbers of neutrons",c:"SCIENCE"},
+  {w:"celsius",h:"A temperature scale where water freezes at zero and boils at one hundred degrees",c:"SCIENCE"},
+  {w:"earth",h:"The third planet from the Sun and the only world confirmed to support life",c:"SCIENCE"},
+
+  {w:"guitar",h:"A six-stringed instrument forming the backbone of rock, blues, country, and folk music",c:"MUSIC"},
+  {w:"flute",h:"A slender wind instrument played by blowing across an embouchure hole, held horizontally",c:"MUSIC"},
+  {w:"piano",h:"An instrument with 88 keys where felt hammers strike tuned strings when keys are pressed",c:"MUSIC"},
+  {w:"rhythm",h:"The pattern of beats, tempo, and timing that gives music its groove and structure",c:"MUSIC"},
+  {w:"chorus",h:"The repeated section of a song that returns multiple times and carries the main hook",c:"MUSIC"},
+  {w:"tempo",h:"The speed at which a piece of music is played, measured in beats per minute",c:"MUSIC"},
+  {w:"melody",h:"A sequence of musical notes that form a recognisable tune — the part you hum along to",c:"MUSIC"},
+  {w:"harmony",h:"The combination of simultaneously sounded musical notes to produce a pleasing effect",c:"MUSIC"},
+  {w:"octave",h:"A musical interval spanning eight notes, where the higher note has double the frequency",c:"MUSIC"},
+  {w:"treble",h:"The higher range of musical pitch, represented by the most commonly used clef",c:"MUSIC"},
+  {w:"sonata",h:"A classical composition for one or two instruments, typically in three or four movements",c:"MUSIC"},
+  {w:"ballad",h:"A slow romantic song or a narrative poem set to music telling a story",c:"MUSIC"},
+  {w:"opera",h:"A dramatic art form combining music, singing, and orchestral performance",c:"MUSIC"},
+  {w:"cadence",h:"A sequence of chords forming a harmonic progression that conveys resolution or pause",c:"MUSIC"},
+  {w:"timbre",h:"The characteristic tone colour of a sound that distinguishes one instrument from another",c:"MUSIC"},
+  {w:"vibrato",h:"A slight rapid variation in pitch used in singing to add expression and warmth",c:"MUSIC"},
+  {w:"staccato",h:"A musical direction indicating notes are played in a short detached manner",c:"MUSIC"},
+  {w:"crescendo",h:"A gradual increase in volume or intensity in a musical passage",c:"MUSIC"},
+  {w:"arpeggio",h:"A technique where the notes of a chord are played in rapid succession rather than simultaneously",c:"MUSIC"},
+  {w:"symphony",h:"A long elaborate musical composition for a full orchestra, typically in four movements",c:"MUSIC"},
+
+  {w:"soccer",h:"The world's most popular sport, played by two teams of eleven using only feet",c:"SPORTS"},
+  {w:"hockey",h:"A fast-paced team sport where players use a stick to hit a puck or ball into the opposing net",c:"SPORTS"},
+  {w:"marathon",h:"A long-distance road race covering exactly 42.195 kilometres",c:"SPORTS"},
+  {w:"cricket",h:"A bat-and-ball team sport enormously popular across South Asia and England",c:"SPORTS"},
+  {w:"archery",h:"The precision sport of propelling arrows toward a distant target using a bow",c:"SPORTS"},
+  {w:"javelin",h:"A track-and-field event where athletes throw a long spear-like implement as far as possible",c:"SPORTS"},
+  {w:"triathlon",h:"An endurance race combining swimming, cycling, and running in sequence",c:"SPORTS"},
+  {w:"fencing",h:"A combat sport involving attacking and defending with a sword on a long narrow strip",c:"SPORTS"},
+  {w:"rowing",h:"A water sport where athletes propel a narrow boat using oars in a synchronised motion",c:"SPORTS"},
+  {w:"badminton",h:"A racket sport played with a shuttlecock hit back and forth over a high net",c:"SPORTS"},
+  {w:"squash",h:"A racket sport played in an enclosed court, hitting a small rubber ball against the walls",c:"SPORTS"},
+  {w:"curling",h:"A winter sport where players slide stones on ice toward a target, sweeping the path with brooms",c:"SPORTS"},
+  {w:"decathlon",h:"An athletics competition consisting of ten track and field events over two days",c:"SPORTS"},
+  {w:"polo",h:"A sport played on horseback where players use mallets to drive a ball through the opposing goal",c:"SPORTS"},
+  {w:"lacrosse",h:"A team sport using a stick with a mesh net to catch, carry, and throw a small ball",c:"SPORTS"},
+  {w:"gymnastics",h:"A competitive sport involving exercises requiring flexibility, balance, strength, and coordination",c:"SPORTS"},
+  {w:"swimming",h:"A competitive water sport where athletes race across pools using regulated body strokes",c:"SPORTS"},
+  {w:"cycling",h:"A sport where competitors race on bicycles across roads, tracks, or off-road terrain",c:"SPORTS"},
+  {w:"boxing",h:"A combat sport where two opponents fight using only their fists inside a roped square ring",c:"SPORTS"},
+  {w:"wrestling",h:"A grappling sport where competitors attempt to pin or throw their opponent to the ground",c:"SPORTS"},
+
+  {w:"python",h:"A widely used beginner-friendly programming language popular in data science and automation",c:"TECH"},
+  {w:"coding",h:"The practice of writing precise instructions in a programming language for a computer to execute",c:"TECH"},
+  {w:"github",h:"The most popular cloud-based platform for hosting, versioning, and collaborating on source code",c:"TECH"},
+  {w:"html",h:"The standard markup language used to structure and present content on the World Wide Web",c:"TECH"},
+  {w:"mysql",h:"A widely deployed open-source relational database management system used in web applications",c:"TECH"},
+  {w:"excel",h:"Microsoft's spreadsheet software used globally for data organisation, formulas, and charts",c:"TECH"},
+  {w:"bitcoin",h:"The world's first decentralised peer-to-peer digital currency, introduced in 2009",c:"TECH"},
+  {w:"router",h:"A networking device that forwards data packets between computer networks",c:"TECH"},
+  {w:"server",h:"A powerful computer that provides services, data, or resources to other computers over a network",c:"TECH"},
+  {w:"kernel",h:"The core component of an operating system managing communication between software and hardware",c:"TECH"},
+  {w:"browser",h:"A software application used to access and navigate sites on the World Wide Web",c:"TECH"},
+  {w:"algorithm",h:"A step-by-step set of rules designed to solve a problem or accomplish a task",c:"TECH"},
+  {w:"database",h:"An organised collection of structured data stored electronically and managed by software",c:"TECH"},
+  {w:"protocol",h:"A set of rules governing how data is transmitted and received between networked devices",c:"TECH"},
+  {w:"compiler",h:"A program that translates code written in a high-level language into machine code",c:"TECH"},
+  {w:"firewall",h:"A network security system that monitors and controls incoming and outgoing traffic based on rules",c:"TECH"},
+  {w:"interface",h:"A shared boundary where two systems interact, such as a user-facing screen or API",c:"TECH"},
+  {w:"javascript",h:"The programming language that makes web pages interactive, running directly in the browser",c:"TECH"},
+  {w:"mobile",h:"A portable handheld electronic device capable of phone calls, apps, and internet connectivity",c:"TECH"},
+  {w:"google",h:"The world's most widely used internet search engine, processing billions of queries every day",c:"TECH"},
+
+  {w:"volcano",h:"A mountain formed by successive eruptions of molten rock and ash from deep beneath Earth",c:"NATURE"},
+  {w:"dolphin",h:"A highly intelligent social marine mammal renowned for its agility and playfulness",c:"NATURE"},
+  {w:"coral",h:"Tiny marine invertebrates that secrete calcium carbonate skeletons forming colourful underwater reefs",c:"NATURE"},
+  {w:"glacier",h:"A slow-moving mass of compacted ice and snow that flows under its own immense weight",c:"NATURE"},
+  {w:"tornado",h:"A violently rotating column of air in contact with the ground, formed in severe thunderstorms",c:"NATURE"},
+  {w:"tsunami",h:"A series of enormous ocean waves caused by an underwater earthquake or volcanic eruption",c:"NATURE"},
+  {w:"monsoon",h:"A seasonal wind pattern that brings heavy rainfall to South and Southeast Asia",c:"NATURE"},
+  {w:"savanna",h:"A flat tropical grassland with very few trees, found mainly in Africa",c:"NATURE"},
+  {w:"tundra",h:"A vast flat treeless Arctic region where the subsoil is permanently frozen",c:"NATURE"},
+  {w:"mangrove",h:"A tree that grows in coastal saline or brackish water, forming dense protective forests",c:"NATURE"},
+  {w:"estuary",h:"The tidal mouth of a large river where freshwater meets and mixes with seawater",c:"NATURE"},
+  {w:"canyon",h:"A deep gorge carved into rock by a river over millions of years, with steep cliff sides",c:"NATURE"},
+  {w:"lagoon",h:"A shallow body of water separated from a larger sea by sandbars, reefs, or barrier islands",c:"NATURE"},
+  {w:"plateau",h:"A flat-topped elevated landform with steep sides, rising sharply above surrounding areas",c:"NATURE"},
+  {w:"prairie",h:"A large area of flat or rolling grassland in North America once home to vast herds of bison",c:"NATURE"},
+  {w:"aurora",h:"A natural light display in the sky caused by charged solar particles colliding with Earth's atmosphere",c:"NATURE"},
+  {w:"permafrost",h:"A thick layer of soil that remains below freezing throughout the year in polar regions",c:"NATURE"},
+  {w:"biome",h:"A large naturally occurring community of flora and fauna occupying a major habitat on Earth",c:"NATURE"},
+  {w:"forest",h:"A large expanse of land densely covered by trees and rich with diverse wildlife",c:"NATURE"},
+  {w:"rain",h:"Water vapour that condenses in clouds and falls to the ground as liquid droplets",c:"NATURE"},
+
+  {w:"chess",h:"A two-player strategy board game using sixteen pieces per side including kings, queens, and pawns",c:"GAMES"},
+  {w:"tetris",h:"A classic puzzle game where players rotate and arrange falling geometric blocks to complete solid rows",c:"GAMES"},
+  {w:"arcade",h:"A style of action video games, or the venue filled with coin-operated gaming machines",c:"GAMES"},
+  {w:"avatar",h:"A digital character or icon representing a user or player in a virtual environment",c:"GAMES"},
+  {w:"dungeon",h:"An underground labyrinth in fantasy role-playing games, inhabited by monsters and treasure",c:"GAMES"},
+  {w:"joystick",h:"A control device for video games that steers a character by moving a lever",c:"GAMES"},
+  {w:"console",h:"A dedicated electronic device designed primarily for playing video games",c:"GAMES"},
+  {w:"sprite",h:"A two-dimensional bitmap image used to represent characters in older video games",c:"GAMES"},
+  {w:"pixel",h:"The smallest unit of a digital display; thousands combine to form a picture",c:"GAMES"},
+  {w:"sandbox",h:"A game mode giving players freedom to explore and modify the world with no fixed goal",c:"GAMES"},
+  {w:"respawn",h:"The action of a game character reappearing in the game world after being eliminated",c:"GAMES"},
+  {w:"quest",h:"A journey or mission in a role-playing game with specific objectives that advance the story",c:"GAMES"},
+  {w:"loot",h:"Items, weapons, and treasure collected from enemies or discovered in the game world",c:"GAMES"},
+  {w:"portal",h:"A magical gateway in games that instantly transports a player from one location to another",c:"GAMES"},
+  {w:"polygon",h:"A geometric shape made of straight lines used as building blocks of 3D game graphics",c:"GAMES"},
+  {w:"raid",h:"A cooperative multiplayer challenge where players battle a powerful boss together",c:"GAMES"},
+  {w:"crafting",h:"A game mechanic allowing players to combine collected materials to create new items",c:"GAMES"},
+  {w:"stealth",h:"A game mechanic focused on avoiding detection by enemies rather than direct combat",c:"GAMES"},
+  {w:"strategy",h:"A category of games requiring careful planning and decision-making to achieve victory",c:"GAMES"},
+  {w:"spawn",h:"The location in a game world where a player or enemy character first appears or reappears",c:"GAMES"},
+
+  {w:"compass",h:"A navigation instrument that aligns with Earth's magnetic field to indicate north",c:"GENERAL"},
+  {w:"library",h:"A building housing a large organised collection of books and resources for public use",c:"GENERAL"},
+  {w:"mirror",h:"A smooth highly polished surface that reflects light to produce a clear image",c:"GENERAL"},
+  {w:"candle",h:"A block of wax with a central wick that burns slowly to produce light",c:"GENERAL"},
+  {w:"calendar",h:"A system organising days into weeks, months, and years used for planning",c:"GENERAL"},
+  {w:"telescope",h:"An optical instrument using lenses or mirrors to observe distant objects in space",c:"GENERAL"},
+  {w:"microscope",h:"A scientific instrument using lenses to magnify objects too small to see with the naked eye",c:"GENERAL"},
+  {w:"abacus",h:"An ancient manual counting device using beads sliding along rods for arithmetic",c:"GENERAL"},
+  {w:"pendulum",h:"A weight suspended from a fixed point that swings back and forth, used in clocks",c:"GENERAL"},
+  {w:"envelope",h:"A flat paper container used to enclose a letter or document for mailing",c:"GENERAL"},
+  {w:"archive",h:"A collection of historical documents and records preserved for reference and future study",c:"GENERAL"},
+  {w:"journal",h:"A regularly maintained record of daily experiences and thoughts written by a person",c:"GENERAL"},
+  {w:"almanac",h:"An annual publication listing facts about calendars, weather, astronomy, and general knowledge",c:"GENERAL"},
+  {w:"beacon",h:"A fire or light set up in a prominent position as a warning, guide, or celebration signal",c:"GENERAL"},
+  {w:"sundial",h:"An ancient device that tells time by the position of the shadow cast by sunlight",c:"GENERAL"},
+  {w:"scroll",h:"A roll of parchment or paper used as the primary writing medium before books were invented",c:"GENERAL"},
+  {w:"hourglass",h:"A device with two glass bulbs measuring time as sand flows between them",c:"GENERAL"},
+  {w:"lantern",h:"A portable light source enclosed in a protective transparent case, used before electricity",c:"GENERAL"},
+  {w:"email",h:"A system allowing users to compose, send, and receive digital messages electronically",c:"GENERAL"},
+  {w:"search",h:"The systematic process of looking through information to locate something specific",c:"GENERAL"},
+];
+
+const CAT_ICON={GEOGRAPHY:"🌍",HISTORY:"⚔️",SCIENCE:"🔬",MUSIC:"🎵",SPORTS:"🏅",TECH:"💻",NATURE:"🌿",GAMES:"🎮",GENERAL:"🌙",ALL:"🃏"};
+const MAX_ATT=5;
+const PTS_CORRECT=10; // Points per correct answer
+const KB=[['Q','W','E','R','T','Y','U','I','O','P'],['A','S','D','F','G','H','J','K','L'],['Z','X','C','V','B','N','M']];
+
+/* Auth */
+const getU=()=>JSON.parse(localStorage.getItem('cerebro_u')||'{}');
+const saveU=u=>localStorage.setItem('cerebro_u',JSON.stringify(u));
+
+/* State */
+let cWord='',cHint='',cCat='',revealed=[],wrongG=[];
+let score=0,streak=0,bestStreak=0,correct=0,attempted=0;
+let lenShown=false,wordOver=false,activeFilter='ALL',pool=[],usedW=[];
+let histItems=[];
+const ks={};
+
+const $=id=>document.getElementById(id);
+let _tt;
+function toast(msg,type='info'){const t=$('toast');t.textContent=msg;t.className=`toast ${type} show`;clearTimeout(_tt);_tt=setTimeout(()=>t.className='toast',2200)}
+function bump(el){el.classList.remove('bump');void el.offsetWidth;el.classList.add('bump')}
+function showPts(pts){const d=document.createElement('div');d.className='pts-flash';d.textContent='+'+pts+' pts';document.body.appendChild(d);setTimeout(()=>d.remove(),950)}
+
+/* Init user display */
+function initUser(){
+  $('hAv').textContent=CU[0].toUpperCase();
+  $('hName').textContent=CU;
+}
+
+/* Theme */
+function applyTheme(cat){
+  const t=cat==='ALL'?'TECH':cat;
+  document.body.dataset.theme=t;
+  $('thBadge').textContent=(CAT_ICON[cat]||'')+' '+(cat==='ALL'?'ALL CATEGORIES':cat);
+  startParticles(cat==='ALL'?(cCat||'ALL'):cat);
+}
+
+/* Keyboard */
+function buildKB(){
+  $('keyboard').innerHTML='';
+  KB.forEach(row=>{
+    const r=document.createElement('div');r.className='krow';
+    row.forEach(l=>{
+      const b=document.createElement('button');b.className='kkey';b.textContent=l;b.dataset.l=l;
+      b.addEventListener('click',()=>{$('ginp').value+=l.toLowerCase();$('ginp').focus()});
+      r.appendChild(b);
+    });
+    $('keyboard').appendChild(r);
+  });
+}
+function refreshKB(){
+  document.querySelectorAll('.kkey').forEach(k=>{
+    const l=k.dataset.l.toLowerCase();k.className='kkey';
+    if(ks[l]==='bad')k.classList.add('elim');
+    else if(ks[l]==='ok')k.classList.add('right');
+  });
+}
+
+/* Bubbles */
+function buildBubbles(){
+  const ab=$('attBubs');ab.innerHTML='';
+  for(let i=0;i<MAX_ATT;i++){
+    const d=document.createElement('div');d.className='att-b';
+    if(i<wrongG.length)d.classList.add('wrong');
+    ab.appendChild(d);
+  }
+  $('attLbl').textContent=`Attempt ${Math.min(wrongG.length+1,MAX_ATT)}/${MAX_ATT}`;
+}
+
+/* Tiles */
+function buildTiles(){
+  $('wordDisp').innerHTML='';
+  for(let i=0;i<cWord.length;i++){
+    const t=document.createElement('div');t.className='tile';t.id='ti'+i;
+    t.style.animationDelay=(i*.055)+'s';
+    if(revealed[i]){t.classList.add('revealed');t.textContent=cWord[i].toUpperCase()}
+    $('wordDisp').appendChild(t);
+  }
+}
+function revealTile(idx,cls='revealed'){
+  revealed[idx]=true;
+  const t=$('ti'+idx);if(!t)return;
+  t.className='tile '+cls;t.textContent=cWord[idx].toUpperCase();
+}
+
+/* Progress */
+function renderProg(){
+  const total=pool.length,done=usedW.filter(w=>pool.includes(w)).length;
+  const pct=total?Math.round(done/total*100):0;
+  $('pFill').style.width=pct+'%';$('pLbl').textContent=done+' / '+total;
+}
+
+/* Load word */
+function loadWord(){
+  const avail=pool.filter(w=>!usedW.includes(w));
+  if(!avail.length){showEnd(true);return}
+  const entry=WORDS.find(e=>e.w===avail[Math.floor(Math.random()*avail.length)]);
+  cWord=entry.w;cHint=entry.h;cCat=entry.c;
+  revealed=new Array(cWord.length).fill(false);
+  wrongG=[];lenShown=false;wordOver=false;
+  Object.keys(ks).forEach(k=>delete ks[k]);
+  applyTheme(activeFilter==='ALL'?cCat:activeFilter);
+  $('hintBody').innerHTML=cHint;
+  $('ginp').value='';
+  $('rvBanner').className='rv-banner';
+  [$('bReveal'),$('bLen'),$('bSub')].forEach(b=>{b.disabled=false;b.classList.remove('used')});
+  buildTiles();buildBubbles();refreshKB();renderProg();
+  $('ginp').focus();
+}
+
+/* Submit */
+function doGuess(){
+  if(wordOver)return;
+  const g=$('ginp').value.trim().toLowerCase();
+  if(!g){$('ginp').classList.add('shake');setTimeout(()=>$('ginp').classList.remove('shake'),460);return}
+  $('ginp').value='';
+
+  if(g===cWord){
+    revealed.fill(true);
+    document.querySelectorAll('.tile').forEach((t,i)=>{
+      t.className='tile won';t.textContent=cWord[i].toUpperCase();t.style.animationDelay=(i*.06)+'s';
+    });
+    g.split('').forEach(l=>{ks[l]='ok'});refreshKB();
+    score+=PTS_CORRECT;streak++;correct++;attempted++;
+    if(streak>bestStreak)bestStreak=streak;
+    updateScore();
+    $('ginp').classList.add('glow-ok');setTimeout(()=>$('ginp').classList.remove('glow-ok'),600);
+    showPts(PTS_CORRECT);
+    const msgs=['BRILLIANT!','NAILED IT!','GENIUS!','PERFECT!','OUTSTANDING!'];
+    toast(msgs[Math.floor(Math.random()*msgs.length)]+' +'+PTS_CORRECT+' pts','ok');
+    addHistory(cWord,PTS_CORRECT);
+    wordOver=true;saveScore();usedW.push(cWord);renderProg();
+    setTimeout(loadWord,1700);
+  } else {
+    wrongG.push(g);
+    g.split('').forEach(l=>{if(!cWord.includes(l))ks[l]='bad'});
+    refreshKB();buildBubbles();
+    $('ginp').classList.add('shake');
+    setTimeout(()=>$('ginp').classList.remove('shake'),460);
+    if(wrongG.length>=MAX_ATT){
+      attempted++;streak=0;
+      doReveal();addHistory(cWord,0);updateScore();saveScore();
+      wordOver=true;
+      toast('All attempts used — answer revealed!','bad');
+      usedW.push(cWord);renderProg();
+      setTimeout(loadWord,3200);
+    } else {
+      const left=MAX_ATT-wrongG.length;
+      toast(`Wrong! ${left} attempt${left===1?'':'s'} left`,'bad');
+    }
+  }
+}
+
+function doReveal(){
+  for(let i=0;i<cWord.length;i++) revealTile(i,'auto-rv');
+  $('rvWord').textContent=cWord.toUpperCase();
+  $('rvBanner').className='rv-banner show';
+  [$('bSub'),$('bReveal'),$('bLen')].forEach(b=>b.disabled=true);
+}
+
+/* Score */
+function updateScore(){
+  [$('hScore'),$('scoreBig')].forEach(el=>{el.textContent=score;bump(el)});
+  $('hStreak').textContent=streak;$('hCorrect').textContent=correct;
+  $('scC').textContent=correct;$('scS').textContent=bestStreak;
+  $('scA').textContent=attempted?Math.round(correct/attempted*100)+'%':'—';
+}
+
+function addHistory(word,pts){
+  histItems.unshift({word,pts});
+  if(histItems.length>30)histItems.pop();
+  updateHistory();
+}
+function updateHistory(){
+  const el=$('histList');
+  if(!histItems.length){el.innerHTML='<div class="h-empty">No words yet</div>';return}
+  el.innerHTML=histItems.map(h=>`<div class="hi"><span class="hw">${h.word.toUpperCase()}</span><span class="hp ${h.pts?'g':'b'}">${h.pts?'+'+h.pts:'MISS'}</span></div>`).join('');
+}
+
+/* Save */
+function saveScore(){
+  if(!CU)return;
+  const users=getU();const u=users[CU]||{score:0,bestStreak:0,games:0,catScores:{},joined:new Date().toLocaleDateString()};
+  if(score>u.score)u.score=score;
+  if(bestStreak>u.bestStreak)u.bestStreak=bestStreak;
+  u.games++;
+  const cs=u.catScores||{};
+  if(score>(cs[activeFilter]||0))cs[activeFilter]=score;
+  u.catScores=cs;users[CU]=u;saveU(users);
+}
+
+/* Filter */
+function setFilter(cat){
+  activeFilter=cat;
+  pool=cat==='ALL'?WORDS.map(e=>e.w):WORDS.filter(e=>e.c===cat).map(e=>e.w);
+  usedW=[];applyTheme(cat);renderProg();loadWord();
+}
+document.querySelectorAll('.ctab').forEach(tab=>tab.addEventListener('click',()=>{
+  document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('active'));
+  tab.classList.add('active');streak=0;$('hStreak').textContent=0;
+  setFilter(tab.dataset.cat);
+}));
+
+/* Actions */
+$('bReveal').onclick=()=>{
+  if(wordOver)return;
+  const hidden=revealed.map((v,i)=>!v?i:-1).filter(i=>i!==-1);
+  if(!hidden.length){toast('All letters already revealed','info');return}
+  revealTile(hidden[Math.floor(Math.random()*hidden.length)],'revealed');
+  score=Math.max(0,score-1);updateScore();
+  toast('Letter revealed  −1 pt','info');
+  if(revealed.every(v=>v)){$('bReveal').disabled=true;$('bReveal').classList.add('used')}
+};
+$('bLen').onclick=()=>{
+  if(lenShown||wordOver)return;lenShown=true;
+  $('bLen').disabled=true;$('bLen').classList.add('used');
+  $('hintBody').innerHTML=cHint+`<span class="len-tag">${cWord.length} letters</span>`;
+  toast('Word has '+cWord.length+' letters','info');
+};
+$('bSkip').onclick=()=>{
+  if(wordOver)return;streak=0;usedW.push(cWord);
+  toast('Skipped — the word was "'+cWord.toUpperCase()+'"','bad');
+  updateScore();renderProg();setTimeout(loadWord,600);
+};
+$('bSub').onclick=doGuess;
+$('ginp').addEventListener('keydown',e=>{if(e.key==='Enter')doGuess()});
+
+/* Profile */
+$('profileBtn').onclick=openProf;
+$('closeProfBtn').onclick=()=>$('profOv').classList.remove('show');
+$('logoutBtn').onclick=()=>{
+  sessionStorage.removeItem('cerebro_session');
+  window.location.href='login.html';
+};
+function openProf(){
+  const users=getU();const u=users[CU]||{};
+  $('pAvLg').textContent=CU[0].toUpperCase();
+  $('pNmLg').textContent=CU;
+  $('pJoLg').textContent='Joined '+(u.joined||'recently');
+  $('pgSc').textContent=Math.max(u.score||0,score);
+  $('pgGm').textContent=u.games||0;
+  $('pgSt').textContent=Math.max(u.bestStreak||0,bestStreak);
+  const cs=u.catScores||{};
+  const cats=['ALL','GEOGRAPHY','HISTORY','SCIENCE','MUSIC','SPORTS','TECH','NATURE','GAMES','GENERAL'];
+  $('catScList').innerHTML=cats.map(c=>`<div class="cs-row"><span class="cs-n">${CAT_ICON[c]} ${c}</span><span class="cs-v">${cs[c]||0}</span></div>`).join('');
+  $('profOv').classList.add('show');
+}
+
+/* Back */
+$('backBtn').addEventListener('click',()=>{
+  clearInterval(particleTimer);
+  window.location.href='index.html';
+});
+
+/* Game end */
+function showEnd(done){
+  saveScore();
+  $('gEI').textContent=done?'🏆':'🎉';
+  $('gET').textContent=done?'ALL DONE!':'COMPLETE!';
+  $('gES').textContent=done?'You finished all '+pool.length+' words!':'Round finished';
+  $('gESc').innerHTML='<span>'+score+'</span> pts';
+  $('gEndOv').classList.add('show');
+}
+$('btnPA').onclick=()=>{
+  $('gEndOv').classList.remove('show');
+  score=0;streak=0;bestStreak=0;correct=0;attempted=0;histItems=[];
+  updateScore();updateHistory();setFilter(activeFilter);
+};
+$('btnGH').onclick=()=>{ clearInterval(particleTimer); window.location.href='index.html'; };
+[$('gEndOv'),$('profOv')].forEach(ov=>ov.addEventListener('click',e=>{if(e.target===ov)ov.classList.remove('show')}));
+
+/* Boot */
+initUser();buildKB();setFilter('ALL');
+</script>
+</body>
+</html>
