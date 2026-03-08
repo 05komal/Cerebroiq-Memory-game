@@ -1,16 +1,16 @@
-# 🧠 CerebroIQ — Word & Memory Challenge Suite
+# CerebroIQ — Word & Memory Challenge Suite
 
 > A browser-based game suite featuring a word guessing game and a flash memory challenge, built with pure HTML, CSS, and JavaScript. No frameworks. No installs. Just open and play.
 
 ---
 
-## 🔗 Live Demo
+## Live Demo
 
 > [https://cerebroiq.vercel.app](https://cerebroiq.vercel.app)
 
 ---
 
-## 📸 Preview
+## Preview
 
 | Login | Hub | WordQuest | MNEMO |
 |-------|-----|-----------|-------|
@@ -18,9 +18,9 @@
 
 ---
 
-## 🎮 Games
+## Games
 
-### 🔤 WordQuest
+### WordQuest
 A word guessing game with **200 words** across **10 categories**.
 
 - Guess the hidden word using a hint
@@ -30,7 +30,7 @@ A word guessing game with **200 words** across **10 categories**.
 - **10 points** per correct answer
 - Categories: Geography, History, Science, Music, Sports, Tech, Nature, Games, General, All
 
-### 🧠 MNEMO
+### MNEMO
 A flash memory game that tests how well you can recall sequences.
 
 - A sequence of items flashes on screen for a few seconds
@@ -43,19 +43,19 @@ A flash memory game that tests how well you can recall sequences.
 
 ---
 
-## ✨ Features
+## Features
 
-- 🔐 **Login / Register system** — per-user scores saved in `localStorage`
-- 🛡️ **Auth-gated pages** — hub and games redirect to login if not signed in
-- 📊 **Live score tracking** — score, streak, accuracy, and best scores per category
-- 🌊 **Category-themed floating particles** — leaves for Geography, notes for Music, bugs for Nature, etc.
-- 🎨 **10 dynamic themes** — each category has its own color palette and background
-- 📱 **Responsive design** — works on desktop and mobile
-- ⚡ **No dependencies** — pure HTML/CSS/JS, no npm, no build step
+-  **Login / Register system** — per-user scores saved in `localStorage`
+-  **Auth-gated pages** — hub and games redirect to login if not signed in
+-  **Live score tracking** — score, streak, accuracy, and best scores per category
+-  **Category-themed floating particles** — leaves for Geography, notes for Music, bugs for Nature, etc.
+-  **10 dynamic themes** — each category has its own color palette and background
+-  **Responsive design** — works on desktop and mobile
+-  **No dependencies** — pure HTML/CSS/JS, no npm, no build step
 
 ---
 
-## 📁 File Structure
+## File Structure
 
 ```
 cerebroiq/
@@ -68,7 +68,7 @@ cerebroiq/
 
 ---
 
-## 🚀 Running Locally
+## Running Locally
 
 ### Option 1 — VS Code Live Server (Recommended)
 1. Install the **Live Server** extension in VS Code
@@ -88,14 +88,14 @@ Double-click `login.html` in File Explorer *(most features work)*
 
 ---
 
-## ☁️ Deployment
+## Deployment
 
 ### Vercel (Recommended)
 1. Push this repo to GitHub
 2. Go to [vercel.com](https://vercel.com) → **Add New Project**
 3. Import your GitHub repo
 4. Leave all settings default → click **Deploy**
-5. Live in ~30 seconds ✅
+5. Live in ~30 seconds 
 
 ### GitHub Pages
 1. Go to your repo → **Settings** → **Pages**
@@ -118,7 +118,7 @@ Double-click `login.html` in File Explorer *(most features work)*
 
 ---
 
-## 🗺️ How Auth Works
+## How Auth Works
 
 - Passwords are **hashed** before storing (simple hash function)
 - Sessions use `sessionStorage` — each browser tab manages its own session
@@ -127,7 +127,7 @@ Double-click `login.html` in File Explorer *(most features work)*
 
 ---
 
-## 📊 Scoring
+## Scoring
 
 | Game | Correct | Partial | Miss |
 |------|---------|---------|------|
@@ -139,7 +139,7 @@ Double-click `login.html` in File Explorer *(most features work)*
 
 ---
 
-## 🛠️ Future Improvements
+## Future Improvements
 
 - [ ] Leaderboard between users
 - [ ] Sound effects and animations on correct answers
@@ -150,12 +150,12 @@ Double-click `login.html` in File Explorer *(most features work)*
 
 ---
 
-## 👨‍💻 Author
+## Author
 
 Built as a personal project — feel free to fork, modify, and deploy your own version!
 
 ---
 
-## 📄 License
+## License
 
 This project is open source and available under the [MIT License](LICENSE).
