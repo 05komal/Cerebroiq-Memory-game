@@ -152,7 +152,7 @@ Double-click `login.html` in File Explorer *(most features work)*
 
 ## Author
 
-Built as a personal project — feel free to fork, modify, and deploy your own version!
+Built as a personal project — feel free to fork, modify, and deploy your own version!!
 
 ---
 
